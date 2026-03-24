@@ -2,18 +2,50 @@ import fs from "fs/promises";
 import path from "path";
 import { Buffer } from "buffer";
 
-const localDataRoot = process.env.DATA_ROOT
-  ? path.resolve(process.cwd(), process.env.DATA_ROOT)
-  : path.resolve(process.cwd(), "data");
+const repoDataRoot = (process.env.DATA_REPO_ROOT || "data").replace(/\\/g, "/").replace(/^\/+|\/+$/g, "");
+
+const localDataRoot = (() => {
+  const root = process.env.DATA_ROOT;
+  if (root) {
+    return path.isAbsolute(root) ? root : path.resolve(process.cwd(), root);
+  }
+  return path.resolve(process.cwd(), repoDataRoot || ".");
+})();
 
 const defaultRepo = "pnheimberg-svg/mission-control-dashboard";
 const dataRepo = process.env.DATA_REPO || process.env.GITHUB_DATA_REPO || defaultRepo;
-const dataBranch = process.env.DATA_BRANCH || "main";
+const dataBranch = process.env.DATA_BRANCH || process.env.GITHUB_DATA_BRANCH || "master";
 const githubToken = process.env.GITHUB_DATA_TOKEN || process.env.GITHUB_TOKEN;
 const useGitHub = process.env.VERCEL === "1" && !!githubToken;
 
+function normalizeRelativePath(relPath: string) {
+  const forward = relPath.replace(/\\/g, "/");
+  return forward.replace(/^(\.\/)+/, "").replace(/^\/+/, "");
+}
+
+function stripRepoRoot(relPath: string) {
+  const normalized = normalizeRelativePath(relPath);
+  if (!repoDataRoot) return normalized;
+  if (normalized === repoDataRoot) return "";
+  if (normalized.startsWith(`${repoDataRoot}/`)) {
+    return normalized.slice(repoDataRoot.length + 1);
+  }
+  return normalized;
+}
+
+function withRepoPath(relPath: string) {
+  const normalized = normalizeRelativePath(relPath);
+  if (!repoDataRoot) return normalized;
+  if (!normalized) return repoDataRoot;
+  if (normalized === repoDataRoot || normalized.startsWith(`${repoDataRoot}/`)) {
+    return normalized;
+  }
+  return `${repoDataRoot}/${normalized}`;
+}
+
 function resolveLocal(relPath: string) {
-  return path.join(localDataRoot, relPath);
+  const relativePath = stripRepoRoot(relPath);
+  return path.join(localDataRoot, relativePath);
 }
 
 async function ensureLocalDir(relPath: string) {
@@ -22,7 +54,7 @@ async function ensureLocalDir(relPath: string) {
 }
 
 function buildGitHubUrl(relPath: string) {
-  const encodedPath = relPath.replace(/\\/g, "/");
+  const encodedPath = withRepoPath(relPath);
   return `https://api.github.com/repos/${dataRepo}/contents/${encodedPath}?ref=${dataBranch}`;
 }
 
