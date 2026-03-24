@@ -20,8 +20,8 @@ export const NAV_ITEMS = [
     icon: Sparkles
   },
   {
-    title: "Kanban Board",
-    description: "Task owner + approval tracking",
+    title: "Tasks",
+    description: "Atlas request queue & approvals",
     href: "/tools/kanban",
     icon: KanbanSquare
   }

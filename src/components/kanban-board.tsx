@@ -1,5 +1,6 @@
 "use client";
 
+import clsx from "clsx";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
@@ -66,6 +67,15 @@ function getSlaMeta(task: KanbanTask) {
   return { label, className: "text-zinc-500" };
 }
 
+function getLinkLabel(link: string) {
+  try {
+    const parts = link.split("/");
+    return parts[parts.length - 1] || link;
+  } catch {
+    return link;
+  }
+}
+
 interface KanbanBoardProps {
   columns: KanbanColumn[];
   tasks: KanbanTask[];
@@ -76,7 +86,7 @@ export function KanbanBoard({ columns, tasks, ownerStatuses }: KanbanBoardProps)
   const router = useRouter();
   const [approvingId, setApprovingId] = useState<string | null>(null);
   const [archivingId, setArchivingId] = useState<string | null>(null);
-  const [ownerFilter, setOwnerFilter] = useState<string>("all");
+  const [ownerFilter, setOwnerFilter] = useState<string>("atlas");
   const [showArchived, setShowArchived] = useState(false);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dropColumn, setDropColumn] = useState<string | null>(null);
@@ -84,11 +94,11 @@ export function KanbanBoard({ columns, tasks, ownerStatuses }: KanbanBoardProps)
   const [isPending, startTransition] = useTransition();
 
   const ownerFilterOptions = [
-    { key: "all", label: "All" },
+    { key: "atlas", label: "Atlas" },
     { key: "micah", label: "Micah" },
     { key: "grant", label: "Grant" },
     { key: "nova", label: "Nova" },
-    { key: "atlas", label: "Atlas" }
+    { key: "all", label: "All" }
   ];
 
   const activeTasks = tasks.filter((task) => !task.archived);
@@ -166,97 +176,138 @@ export function KanbanBoard({ columns, tasks, ownerStatuses }: KanbanBoardProps)
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {errorMessage && <p className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-sm text-rose-200">{errorMessage}</p>}
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap gap-2">
-          {ownerFilterOptions.map((option) => (
-            <button
-              key={option.key}
-              className={`rounded-full px-3 py-1 text-xs ${ownerFilter === option.key ? "bg-white/80 text-black" : "bg-white/5 text-zinc-300"}`}
-              onClick={() => setOwnerFilter(option.key)}
-            >
-              {option.label}
-            </button>
-          ))}
+
+      <div className="rounded-3xl border border-white/10 bg-[#080a11] p-4 shadow-2xl shadow-black/40">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-wrap gap-2">
+            {ownerFilterOptions.map((option) => (
+              <button
+                key={option.key}
+                className={clsx(
+                  "rounded-full px-4 py-1.5 text-xs font-semibold transition",
+                  ownerFilter === option.key
+                    ? "bg-white text-black shadow-lg shadow-white/30"
+                    : "bg-white/5 text-zinc-300 hover:bg-white/10"
+                )}
+                onClick={() => setOwnerFilter(option.key)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+          <button
+            className="rounded-full border border-white/10 px-3 py-1 text-xs text-zinc-200 transition hover:bg-white/5 disabled:opacity-40"
+            onClick={() => setShowArchived((prev) => !prev)}
+            disabled={!showArchived && archivedTasks.length === 0}
+          >
+            {showArchived ? "Hide archived" : `Show archived (${archivedTasks.length})`}
+          </button>
         </div>
-        <button
-          className="rounded-full border border-white/10 px-3 py-1 text-xs text-zinc-200"
-          onClick={() => setShowArchived((prev) => !prev)}
-          disabled={!showArchived && archivedTasks.length === 0}
-        >
-          {showArchived ? "Hide archived" : `Show archived (${archivedTasks.length})`}
-        </button>
-      </div>
-      <div className="grid gap-4 lg:grid-cols-5">
-        {columns.map((column) => {
-          const columnTasks = visibleTasks.filter((task) => task.stage === column.id);
-          const isActiveDropZone = dropColumn === column.id;
-          return (
-            <div
-              key={column.id}
-              className={`rounded-3xl border border-white/5 bg-card/80 p-4 transition ${isActiveDropZone ? "ring-2 ring-sky-400" : ""}`}
-              onDragOver={(event) => event.preventDefault()}
-              onDragEnter={() => setDropColumn(column.id)}
-              onDrop={() => onDrop(column.id)}
-            >
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">{column.title}</h3>
-                <span className="text-xs text-zinc-500">{columnTasks.length}</span>
-              </div>
-              <div className="mt-4 space-y-4">
-                {columnTasks.length === 0 && <p className="text-xs text-zinc-500">No tasks here yet.</p>}
-                {columnTasks.map((task) => (
-                  <div
-                    key={task.id}
-                    draggable
-                    onDragStart={() => onDragStart(task.id)}
-                    onDragEnd={onDragEnd}
-                    className={`rounded-2xl border border-white/5 bg-black/20 p-4 text-sm text-zinc-200 ${draggingId === task.id ? "opacity-70" : ""}`}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-base font-semibold text-white">{task.title}</p>
-                      <div className="flex items-center gap-2">
-                        <span className={`text-xs font-semibold ${getOwnerClass(task.owner)}`}>{getOwnerName(task.owner)}</span>
-                        <button
-                          className="text-[10px] uppercase tracking-[0.3em] text-zinc-500"
-                          onClick={() => handleArchive(task.id, true)}
-                          disabled={archivingId === task.id}
-                        >
-                          {archivingId === task.id ? "…" : "Archive"}
-                        </button>
-                      </div>
-                    </div>
-                    <p className="mt-2 line-clamp-2 text-xs text-zinc-400">{task.description}</p>
-                    {task.ownerKey && ownerStatuses?.[task.ownerKey] && (
-                      <p className="mt-2 text-[11px] text-zinc-500">Worklog: {ownerStatuses[task.ownerKey]}</p>
-                    )}
-                    {(() => {
-                      const sla = getSlaMeta(task);
-                      return sla ? <p className={`mt-1 text-[11px] ${sla.className}`}>{sla.label}</p> : null;
-                    })()}
-                    {task.needsApproval && (
-                      <div className="mt-3 rounded-2xl border border-yellow-300/30 bg-yellow-300/10 p-3">
-                        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-yellow-200">Approval needed</p>
-                        {task.approvalSummary && <p className="mt-2 text-xs text-yellow-50">{task.approvalSummary}</p>}
-                        <button
-                          className="mt-3 w-full rounded-xl bg-yellow-400/80 px-3 py-2 text-xs font-semibold text-black disabled:opacity-50"
-                          onClick={() => handleApprove(task)}
-                          disabled={approvingId === task.id || isPending}
-                        >
-                          {approvingId === task.id ? "Recording…" : "Approve & Notify"}
-                        </button>
-                      </div>
-                    )}
+
+        <div className="mt-6 grid gap-4 lg:grid-cols-5">
+          {columns.map((column) => {
+            const columnTasks = visibleTasks.filter((task) => task.stage === column.id);
+            const isActiveDropZone = dropColumn === column.id;
+            return (
+              <div
+                key={column.id}
+                className={clsx(
+                  "rounded-3xl border border-white/10 bg-gradient-to-b from-[#111424] to-[#090b12] p-4 shadow-inner shadow-black/60",
+                  isActiveDropZone && "ring-2 ring-sky-400/70"
+                )}
+                onDragOver={(event) => event.preventDefault()}
+                onDragEnter={() => setDropColumn(column.id)}
+                onDrop={() => onDrop(column.id)}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <p className="text-[0.65rem] uppercase tracking-[0.3em] text-zinc-500">{column.id.replace(/-/g, " ")}</p>
+                    <h3 className="text-lg font-semibold text-white">{column.title}</h3>
                   </div>
-                ))}
+                  <span className="text-xs text-zinc-500">{columnTasks.length}</span>
+                </div>
+
+                <div className="mt-4 space-y-4">
+                  {columnTasks.length === 0 && (
+                    <div className="rounded-2xl border border-dashed border-white/10 bg-black/20 p-4 text-xs text-zinc-500">
+                      Nothing here yet.
+                    </div>
+                  )}
+                  {columnTasks.map((task) => (
+                    <div
+                      key={task.id}
+                      draggable
+                      onDragStart={() => onDragStart(task.id)}
+                      onDragEnd={onDragEnd}
+                      className={clsx(
+                        "rounded-2xl border border-white/10 bg-black/30 p-4 text-sm text-zinc-200 shadow-lg shadow-black/40 transition",
+                        draggingId === task.id && "opacity-60"
+                      )}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div>
+                          <p className="text-[0.65rem] uppercase tracking-[0.3em] text-zinc-500">{task.stage.replace(/-/g, " ")}</p>
+                          <p className="text-base font-semibold text-white">{task.title}</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={clsx("text-xs font-semibold", getOwnerClass(task.owner))}>{getOwnerName(task.owner)}</span>
+                          <button
+                            className="text-[10px] uppercase tracking-[0.3em] text-zinc-500 hover:text-zinc-200"
+                            onClick={() => handleArchive(task.id, true)}
+                            disabled={archivingId === task.id}
+                          >
+                            {archivingId === task.id ? "…" : "Archive"}
+                          </button>
+                        </div>
+                      </div>
+
+                      <p className="mt-2 text-xs text-zinc-400">{task.description}</p>
+
+                      {task.links && task.links.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-2 text-[11px] text-zinc-200">
+                          {task.links.map((link) => (
+                            <span key={link} className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5">
+                              {getLinkLabel(link)}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      {task.ownerKey && ownerStatuses?.[task.ownerKey] && (
+                        <p className="mt-2 text-[11px] text-zinc-500">Worklog: {ownerStatuses[task.ownerKey]}</p>
+                      )}
+
+                      {(() => {
+                        const sla = getSlaMeta(task);
+                        return sla ? <p className={clsx("mt-1 text-[11px]", sla.className)}>{sla.label}</p> : null;
+                      })()}
+
+                      {task.needsApproval && (
+                        <div className="mt-4 rounded-2xl border border-amber-300/30 bg-amber-300/10 p-3">
+                          <p className="text-[0.65rem] uppercase tracking-[0.3em] text-amber-200">Approval needed</p>
+                          {task.approvalSummary && <p className="mt-2 text-xs text-amber-50">{task.approvalSummary}</p>}
+                          <button
+                            className="mt-3 w-full rounded-xl bg-amber-300 px-3 py-2 text-xs font-semibold text-black disabled:opacity-50"
+                            onClick={() => handleApprove(task)}
+                            disabled={approvingId === task.id || isPending}
+                          >
+                            {approvingId === task.id ? "Recording…" : "Approve & Notify"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
+
       {showArchived && (
-        <div className="rounded-3xl border border-white/5 bg-black/20 p-4">
+        <div className="rounded-3xl border border-white/10 bg-black/25 p-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-white">Archived tasks</h3>
             <span className="text-xs text-zinc-500">{archivedTasks.length}</span>
@@ -266,9 +317,12 @@ export function KanbanBoard({ columns, tasks, ownerStatuses }: KanbanBoardProps)
           ) : (
             <div className="mt-4 space-y-3">
               {archivedTasks.map((task) => (
-                <div key={task.id} className="rounded-2xl border border-white/5 bg-black/40 p-4 text-sm text-zinc-200">
+                <div key={task.id} className="rounded-2xl border border-white/10 bg-black/40 p-4 text-sm text-zinc-200">
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-base font-semibold text-white">{task.title}</p>
+                    <div>
+                      <p className="text-[0.65rem] uppercase tracking-[0.3em] text-zinc-500">{task.prevStage || "intake"}</p>
+                      <p className="text-base font-semibold text-white">{task.title}</p>
+                    </div>
                     <button
                       className="text-[10px] text-emerald-300 underline"
                       onClick={() => handleArchive(task.id, false)}
@@ -277,7 +331,6 @@ export function KanbanBoard({ columns, tasks, ownerStatuses }: KanbanBoardProps)
                       Restore
                     </button>
                   </div>
-                  <p className="text-xs text-zinc-500">Last stage: {task.prevStage || "intake"}</p>
                 </div>
               ))}
             </div>
