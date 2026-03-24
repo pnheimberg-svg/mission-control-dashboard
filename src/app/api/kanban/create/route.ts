@@ -1,16 +1,21 @@
-import { NextResponse } from "next/server";
-import fs from "fs/promises";
 import path from "path";
+import { NextResponse } from "next/server";
+import { appendText, readJSON, writeJSON } from "@/lib/data-store";
 
-const boardPath = path.resolve(process.cwd(), "../dashboard/kanban-board.json");
-const eventsLogPath = path.resolve(process.cwd(), "../dashboard/kanban-events.log");
-const kanbanInboxDir = path.resolve(process.cwd(), "../notes/kanban-inbox");
+const boardPath = "dashboard/kanban-board.json";
+const eventsLogPath = "dashboard/kanban-events.log";
+const kanbanInboxDir = "notes/kanban-inbox";
 
 const ownerMap: Record<string, { label: string; inboxFile: string }> = {
   micah: { label: "Micah · Church Ops", inboxFile: "micah.md" },
   grant: { label: "Grant · BDM Sales", inboxFile: "grant.md" },
   nova: { label: "Nova · Business Growth", inboxFile: "nova.md" },
   atlas: { label: "Atlas", inboxFile: "atlas.md" }
+};
+
+type KanbanBoard = {
+  columns: unknown[];
+  tasks: any[];
 };
 
 export async function POST(request: Request) {
@@ -25,8 +30,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unknown owner" }, { status: 400 });
     }
 
-    const boardRaw = await fs.readFile(boardPath, "utf-8");
-    const board = JSON.parse(boardRaw);
+    const board = await readJSON<KanbanBoard>(boardPath, { columns: [], tasks: [] });
     const taskId = `task-${Date.now()}`;
     const timestamp = new Date().toISOString();
     const newTask = {
@@ -42,18 +46,17 @@ export async function POST(request: Request) {
     };
 
     board.tasks.push(newTask);
-    await fs.writeFile(boardPath, JSON.stringify(board, null, 2), "utf-8");
+    await writeJSON(boardPath, board, `Kanban create: ${taskId}`);
 
-    const timestamp = new Date().toISOString();
-    const logEntry = `${timestamp} | NEW_TASK | ${taskId} | ${ownerInfo.label} | ${title}\n`;
-    await fs.appendFile(eventsLogPath, logEntry, "utf-8");
+    const logTimestamp = new Date().toISOString();
+    const logEntry = `${logTimestamp} | NEW_TASK | ${taskId} | ${ownerInfo.label} | ${title}\n`;
+    await appendText(eventsLogPath, logEntry, `Kanban log: ${taskId}`);
 
-    await fs.mkdir(kanbanInboxDir, { recursive: true });
     const message = `### ${timestamp}\n- ${title} (${ownerInfo.label}) — Stage: ${newTask.stage}\n  ${description}\n\n`;
     const atlasInbox = path.join(kanbanInboxDir, "atlas.md");
-    await fs.appendFile(atlasInbox, message, "utf-8");
+    await appendText(atlasInbox, message, `Kanban inbox (Atlas): ${taskId}`);
     const agentInbox = path.join(kanbanInboxDir, ownerInfo.inboxFile);
-    await fs.appendFile(agentInbox, message, "utf-8");
+    await appendText(agentInbox, message, `Kanban inbox (${ownerInfo.label}): ${taskId}`);
 
     return NextResponse.json({ success: true, task: newTask });
   } catch (error) {

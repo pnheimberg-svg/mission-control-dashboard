@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import { appendText, readJSON, writeJSON } from "@/lib/data-store";
 
-const boardPath = path.resolve(process.cwd(), "../dashboard/kanban-board.json");
-const logPath = path.resolve(process.cwd(), "../dashboard/kanban-approvals.log");
+const boardPath = "dashboard/kanban-board.json";
+const logPath = "dashboard/kanban-approvals.log";
+
+type KanbanBoard = {
+  tasks: any[];
+};
 
 export async function POST(request: Request) {
   try {
@@ -12,8 +15,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "taskId is required" }, { status: 400 });
     }
 
-    const rawBoard = await fs.readFile(boardPath, "utf-8");
-    const board = JSON.parse(rawBoard);
+    const board = await readJSON<KanbanBoard>(boardPath, { tasks: [] });
     const task = board.tasks.find((item: any) => item.id === taskId);
 
     if (!task) {
@@ -26,11 +28,11 @@ export async function POST(request: Request) {
     }
     task.lastMovedAt = new Date().toISOString();
 
-    await fs.writeFile(boardPath, JSON.stringify(board, null, 2), "utf-8");
+    await writeJSON(boardPath, board, `Kanban approval: ${taskId}`);
 
     const timestamp = new Date().toISOString();
     const logEntry = `${timestamp} | ${taskId} approved -> stage: ${task.stage}\n`;
-    await fs.appendFile(logPath, logEntry, "utf-8");
+    await appendText(logPath, logEntry, `Kanban approval log: ${taskId}`);
 
     return NextResponse.json({ success: true, stage: task.stage });
   } catch (error) {

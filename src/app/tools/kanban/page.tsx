@@ -1,12 +1,17 @@
-import fs from "fs/promises";
-import path from "path";
-import { KanbanBoard, KanbanColumn, KanbanTask } from "@/components/kanban-board";
 import { CreateTaskForm } from "@/components/create-task-form";
+import { KanbanBoard, KanbanColumn, KanbanTask } from "@/components/kanban-board";
+import { readJSON, readText } from "@/lib/data-store";
+
+const boardPath = "dashboard/kanban-board.json";
+const micahWorklogPath = "agents/church-ops-agent-worklog.md";
+const grantWorklogPath = "agents/bdm-sales-agent-worklog.md";
+const novaWorklogPath = "agents/business-growth-agent-worklog.md";
 
 async function getKanbanData(): Promise<{ columns: KanbanColumn[]; tasks: KanbanTask[] }> {
-  const filePath = path.resolve(process.cwd(), "../dashboard/kanban-board.json");
-  const raw = await fs.readFile(filePath, "utf-8");
-  const parsed = JSON.parse(raw);
+  const parsed = await readJSON<{ columns?: KanbanColumn[]; tasks?: KanbanTask[] }>(boardPath, {
+    columns: [],
+    tasks: []
+  });
   return {
     columns: parsed.columns ?? [],
     tasks: parsed.tasks ?? []
@@ -15,8 +20,7 @@ async function getKanbanData(): Promise<{ columns: KanbanColumn[]; tasks: Kanban
 
 async function extractImmediatePriority(relativePath: string) {
   try {
-    const filePath = path.resolve(process.cwd(), "../" + relativePath);
-    const content = await fs.readFile(filePath, "utf-8");
+    const content = await readText(relativePath);
     const match = content.match(/### Immediate priorities([\s\S]*?)(?:\n### |\n## |$)/i);
     if (!match) return "";
     const lines = match[1]
@@ -32,9 +36,9 @@ async function extractImmediatePriority(relativePath: string) {
 
 async function getOwnerStatuses() {
   return {
-    micah: await extractImmediatePriority("agents/church-ops-agent-worklog.md"),
-    grant: await extractImmediatePriority("agents/bdm-sales-agent-worklog.md"),
-    nova: await extractImmediatePriority("agents/business-growth-agent-worklog.md"),
+    micah: await extractImmediatePriority(micahWorklogPath),
+    grant: await extractImmediatePriority(grantWorklogPath),
+    nova: await extractImmediatePriority(novaWorklogPath),
     atlas: ""
   };
 }

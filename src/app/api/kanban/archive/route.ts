@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
-import fs from "fs/promises";
-import path from "path";
+import { appendText, readJSON, writeJSON } from "@/lib/data-store";
 
-const boardPath = path.resolve(process.cwd(), "../dashboard/kanban-board.json");
-const eventsLogPath = path.resolve(process.cwd(), "../dashboard/kanban-events.log");
+const boardPath = "dashboard/kanban-board.json";
+const eventsLogPath = "dashboard/kanban-events.log";
+
+type KanbanBoard = {
+  tasks: any[];
+};
 
 export async function POST(request: Request) {
   try {
@@ -12,8 +15,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "taskId and archived flag required" }, { status: 400 });
     }
 
-    const raw = await fs.readFile(boardPath, "utf-8");
-    const board = JSON.parse(raw);
+    const board = await readJSON<KanbanBoard>(boardPath, { tasks: [] });
     const task = board.tasks.find((item: any) => item.id === taskId);
     if (!task) {
       return NextResponse.json({ error: "Task not found" }, { status: 404 });
@@ -33,10 +35,10 @@ export async function POST(request: Request) {
     }
     task.lastMovedAt = timestamp;
 
-    await fs.writeFile(boardPath, JSON.stringify(board, null, 2), "utf-8");
+    await writeJSON(boardPath, board, `Kanban ${archived ? "archive" : "restore"}: ${taskId}`);
 
     const logEntry = `${timestamp} | ${archived ? "ARCHIVE" : "RESTORE"} | ${taskId}\n`;
-    await fs.appendFile(eventsLogPath, logEntry, "utf-8");
+    await appendText(eventsLogPath, logEntry, `Kanban log: ${taskId}`);
 
     return NextResponse.json({ success: true });
   } catch (error) {

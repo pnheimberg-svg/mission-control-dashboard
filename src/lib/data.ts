@@ -1,5 +1,5 @@
-import fs from "fs/promises";
 import path from "path";
+import { listFiles, readJSON, readText } from "@/lib/data-store";
 
 export type MissionMetric = {
   label: string;
@@ -61,15 +61,15 @@ export type WorklogSummary = {
   next: string[];
 };
 
-const memoryDirectory = path.resolve(process.cwd(), "../memory");
-const dashboardDataPath = path.resolve(process.cwd(), "../dashboard/agent-dashboard-data.json");
-const routingFilePath = path.resolve(process.cwd(), "../agents/shared/current-priorities.md");
-const remindersQueuePath = path.resolve(process.cwd(), "../notes/personal/reminders-queue.md");
+const memoryDirectory = "memory";
+const dashboardDataPath = "dashboard/agent-dashboard-data.json";
+const routingFilePath = "agents/shared/current-priorities.md";
+const remindersQueuePath = "notes/personal/reminders-queue.md";
 
 const worklogFiles: { agent: string; filePath: string }[] = [
-  { agent: "Micah", filePath: path.resolve(process.cwd(), "../agents/church-ops-agent-worklog.md") },
-  { agent: "Grant", filePath: path.resolve(process.cwd(), "../agents/bdm-sales-agent-worklog.md") },
-  { agent: "Nova", filePath: path.resolve(process.cwd(), "../agents/business-growth-agent-worklog.md") }
+  { agent: "Micah", filePath: "agents/church-ops-agent-worklog.md" },
+  { agent: "Grant", filePath: "agents/bdm-sales-agent-worklog.md" },
+  { agent: "Nova", filePath: "agents/business-growth-agent-worklog.md" }
 ];
 
 const dashboardFallback: DashboardSnapshot = {
@@ -88,18 +88,8 @@ const dashboardFallback: DashboardSnapshot = {
   systemStatus: []
 };
 
-async function readJSONFile<T>(filePath: string, fallback: T): Promise<T> {
-  try {
-    const content = await fs.readFile(filePath, "utf-8");
-    return JSON.parse(content) as T;
-  } catch (error) {
-    console.warn(`Failed to read ${filePath}:`, error);
-    return fallback;
-  }
-}
-
 export async function getDashboardSnapshot(): Promise<DashboardSnapshot> {
-  return readJSONFile<DashboardSnapshot>(dashboardDataPath, dashboardFallback);
+  return readJSON<DashboardSnapshot>(dashboardDataPath, dashboardFallback);
 }
 
 function pickSummaryLines(content: string, maxLines: number): string[] {
@@ -111,25 +101,24 @@ function pickSummaryLines(content: string, maxLines: number): string[] {
 }
 
 function extractActions(content: string, maxItems: number): string[] {
-  const matches = content.match(/^-\s+.+/gm);
+  const matches = content.match(/^\-\s+.+/gm);
   if (!matches) return [];
   return matches.map((line) => line.replace(/^-/u, "").trim()).slice(0, maxItems);
 }
 
 export async function getDailyLogs(limit = 3): Promise<DailyLog[]> {
   try {
-    const files = await fs.readdir(memoryDirectory);
-    const markdownFiles = files
+    const files = (await listFiles(memoryDirectory))
       .filter((file) => file.endsWith(".md"))
       .sort((a, b) => (a > b ? -1 : 1));
 
-    const selected = markdownFiles.slice(0, limit);
+    const selected = files.slice(0, limit);
 
     const logs: DailyLog[] = [];
 
     for (const file of selected) {
       const filePath = path.join(memoryDirectory, file);
-      const content = await fs.readFile(filePath, "utf-8");
+      const content = await readText(filePath);
       logs.push({
         date: file.replace(".md", ""),
         summary: pickSummaryLines(content, 4),
@@ -146,17 +135,16 @@ export async function getDailyLogs(limit = 3): Promise<DailyLog[]> {
 
 export async function getMemoryEntries(limit = 40): Promise<MemoryEntry[]> {
   try {
-    const files = await fs.readdir(memoryDirectory);
-    const markdownFiles = files
+    const files = (await listFiles(memoryDirectory))
       .filter((file) => file.endsWith(".md"))
       .sort((a, b) => (a > b ? -1 : 1))
       .slice(0, limit);
 
     const entries: MemoryEntry[] = [];
 
-    for (const file of markdownFiles) {
+    for (const file of files) {
       const filePath = path.join(memoryDirectory, file);
-      const content = await fs.readFile(filePath, "utf-8");
+      const content = await readText(filePath);
       entries.push({
         date: file.replace(".md", ""),
         content
@@ -200,18 +188,22 @@ export async function getMissionMetrics(): Promise<MissionMetric[]> {
 
 async function parseCurrentPriorities(): Promise<PipelineItem[]> {
   try {
-    const content = await fs.readFile(routingFilePath, "utf-8");
+    const content = await readText(routingFilePath);
     const lines = content.split(/\r?\n/).filter((line) => line.trim().startsWith("- "));
 
     return lines.map((line) => {
-      const text = line.replace(/^-\s*/, "").trim();
+      const text = line.replace(/^\-\s*/, "").trim();
       const titleMatch = text.match(/\*\*(.+?)\*\*/);
       const ownerMatch = text.match(/\((.+)\)$/);
 
       const title = titleMatch ? titleMatch[1].trim() : text;
       const ownerRaw = ownerMatch ? ownerMatch[1].trim() : "Atlas";
       const owner = ownerRaw.split("·")[0].trim();
-      const tags = ownerRaw.split("·").slice(1).map((tag) => tag.trim()).filter(Boolean);
+      const tags = ownerRaw
+        .split("·")
+        .slice(1)
+        .map((tag) => tag.trim())
+        .filter(Boolean);
 
       return {
         title,
@@ -230,7 +222,6 @@ export async function getPipelineItems(): Promise<PipelineItem[]> {
   const parsed = await parseCurrentPriorities();
   if (parsed.length > 0) return parsed;
 
-  // fallback to simple mapping using focus list if routing file is empty
   const snapshot = await getDashboardSnapshot();
   return snapshot.currentFocus.map((title) => ({
     title,
@@ -245,7 +236,7 @@ function cleanMarkdown(text: string): string {
 
 export async function getReminderEntries(): Promise<ReminderEntry[]> {
   try {
-    const content = await fs.readFile(remindersQueuePath, "utf-8");
+    const content = await readText(remindersQueuePath);
     const lines = content.split(/\r?\n/);
     let category = "";
     let currentTitle: string | null = null;
@@ -257,7 +248,7 @@ export async function getReminderEntries(): Promise<ReminderEntry[]> {
       const entry: ReminderEntry = { title: cleanMarkdown(currentTitle), category };
       for (const rawLine of buffer) {
         const line = rawLine.trim();
-        const match = line.match(/^-\s*([^:]+):\s*(.+)?$/);
+        const match = line.match(/^\-\s*([^:]+):\s*(.+)?$/);
         if (!match) continue;
         const field = match[1].toLowerCase();
         const value = cleanMarkdown(match[2] ?? "");
@@ -314,7 +305,7 @@ function parseNumberedSection(section: string): string[] {
 
 async function parseWorklog(filePath: string, agent: string): Promise<WorklogSummary | null> {
   try {
-    const content = await fs.readFile(filePath, "utf-8");
+    const content = await readText(filePath);
     const dateMatch = content.match(/##\s+(\d{4}-\d{2}-\d{2})/);
     const statusSection = cleanMarkdown(extractMarkdownSection(content, "### Status"));
     const immediateSection = extractMarkdownSection(content, "### Immediate priorities");

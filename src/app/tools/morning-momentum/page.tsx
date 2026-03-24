@@ -1,16 +1,16 @@
-import fs from "fs/promises";
 import path from "path";
+import { listFiles, readText } from "@/lib/data-store";
+
+const reportsDirectory = "reports/morning-surprise";
 
 async function getLatestMorningReport() {
   try {
-    const reportsDir = path.resolve(process.cwd(), "../reports/morning-surprise");
-    const files = await fs.readdir(reportsDir);
-    const markdownFiles = files
+    const files = (await listFiles(reportsDirectory))
       .filter((file) => file.endsWith(".md"))
       .sort((a, b) => (a > b ? -1 : 1));
-    if (markdownFiles.length === 0) return null;
-    const fileName = markdownFiles[0];
-    const content = await fs.readFile(path.join(reportsDir, fileName), "utf-8");
+    if (files.length === 0) return null;
+    const fileName = files[0];
+    const content = await readText(path.join(reportsDirectory, fileName));
     const date = fileName.replace("morning-", "").replace(".md", "");
     return { fileName, content, date };
   } catch (error) {

@@ -1,0 +1,190 @@
+﻿Commercial Email Campaign:
+Prospecting Copy
+Instructions
+Dos
+* Review the email copy below. All changes MUST be highlighted in red. Failure to highlight your changes will result in campaign oversights.
+Donts
+* Do not add links, images, or any sales/promotional copy that could trigger spam filters.
+* Do not remove or adjust the email signature variable {{accountSignature}} at the end of each email.
+* Do not change the phone number. We use tracking numbers for reporting purposes.
+* Spintax content is to help mitigate spam filters by randomly alternating between the different text variations within brackets. You may modify this content, but do not remove the brackets ({{}}) or the pipe (|) separating the content
+   * Example: {{text variation 1|text variation 2}}
+
+
+________________
+EMAIL 1 - MARCH 2025
+Subject: San Joaquin Valley commercial painter looking to introduce ourselves
+Hi {{firstName}},
+We are We Paint & Renovate, a family-owned commercial painting company based in Stockton. We have been working with San Joaquin Valley businesses for over 21 years.
+We specialize in commercial interior and exterior painting for storefronts, office buildings, warehouses, and multi-unit complexes. We work around your schedule so your business never skips a beat.
+Our mission is simple: Professional, Reliable, Trustworthy from start to finish.
+We would appreciate the opportunity to connect. Reply here or call us at 209-696-3828.
+Talk soon,
+ {{accountSignature}}
+________________
+
+
+
+
+EMAIL 2 - MARCH 2025
+Subject: RE: San Joaquin Valley commercial painter looking to introduce ourselves
+Hi {{firstName}},
+We reached out recently and wanted to follow up with one more thought.
+One thing we have learned after 15,000 projects is that the best results start before a single brush is lifted. We walk every job site in person before providing an estimate, so there are no unexpected costs or delays.
+It takes a little more time upfront, but it is what keeps projects on schedule and within budget.
+We would love to chat when the timing is right. Reply here or call us at 209-696-3828.
+Talk soon,
+{{accountSignature}}
+________________
+
+
+
+
+EMAIL 3 - APRIL 2025
+Subject: Spring is the perfect time for exterior commercial painting
+Hi {{firstName}},
+Spring in the Central Valley means perfect weather for exterior commercial painting. The temperatures are right, rain is tapering off, and paint adheres the way it should.
+If your building's exterior has been weathered by another season, now is the time to address it. A well-maintained exterior tells your customers and tenants that you care about the details.
+We handle everything from storefronts to industrial facilities across Stockton and the surrounding Central Valley communities.
+We would love to provide a no-obligation assessment. Reply here or call us at 209-696-3828.
+Talk soon,
+{{accountSignature}}
+________________
+
+
+ 
+EMAIL 4 - MAY 2025
+Subject: Commercial painting that works around your schedule
+Hi {{firstName}},
+The number one concern we hear from business owners and property managers is disruption. Nobody wants painters in the way while your team, your tenants, or your customers are trying to work.
+We build every commercial project around your schedule, not ours. Early mornings, evenings, weekends. Whatever keeps your operation running smoothly.
+Your business should never have to pause for a painting project.
+Let us know if you want to learn more. Reply here or call us at 209-696-3828.
+Talk soon,
+{{accountSignature}}
+________________
+
+
+
+
+EMAIL 5 - JUNE 2025
+Subject: How to choose the right commercial painting contractor
+Hi {{firstName}},
+If you are hiring a commercial painter, here are a few things worth asking: Are they licensed and insured? Do they walk the job site before estimating? Can they work around your hours?
+These are the basics, but they make the difference between a project that meets expectations and one that creates headaches.
+We are a licensed painting contractor with over 21 years of commercial experience, and we are happy to answer those questions, no strings attached.
+Reply here or call us at 209-696-3828.
+Talk soon,
+{{accountSignature}}
+________________
+
+
+
+
+EMAIL 6 - JULY 2025
+Subject: When was the last time your interior got a fresh coat?
+Hi {{firstName}},
+It is one of those things that is easy to overlook. Walls get scuffed, colors fade, and over time your space stops reflecting the quality of what happens inside it.
+A fresh interior creates a better experience for your employees and clients. It is one of the most visible upgrades you can make.
+Summer is a great time to tackle interior projects while the heat makes exterior work more challenging.
+We would love to stop by and give you an honest recommendation. Reply here or call us at 209-696-3828.
+Talk soon,
+{{accountSignature}}
+________________
+
+
+
+
+EMAIL 7 - AUGUST 2025
+Subject: Now is a great time to plan your fall painting project
+Hi {{firstName}},
+Fall in the Central Valley is one of the best seasons for commercial painting. The weather is great for interior and exterior projects, and it gives you a chance to have your space looking sharp before the end of the year.
+The facility managers and property managers we work with know that planning ahead makes all the difference. That means better scheduling, less rush, and results your building deserves.
+If you have been thinking about a project, this is a good time to reach out.
+Reply here or call us at 209-696-3828.
+Talk soon,
+{{accountSignature}}
+________________
+
+
+
+
+EMAIL 8 - SEPTEMBER 2025
+Subject: The key to a commercial painting project that finishes on schedule
+Hi {{firstName}},
+After 21 years of commercial painting across San Joaquin Valley, we have found that projects stay on time and on budget when two things happen: a thorough on-site walkthrough before the estimate, and consistent updates throughout the project.
+That is our approach to every job. We assign a single point of contact, we provide detailed proposals with clear timelines, and we do not surprise you with new changes.
+If you have a project coming up, we would love to connect and discuss your needs.
+Reply here or call us at 209-696-3828.
+Talk soon,
+{{accountSignature}}
+________________
+
+
+
+
+EMAIL 9 - OCTOBER 2025
+Subject: What is your commercial property saying to visitors?
+Hi {{firstName}},
+Here is something we see often. A business delivers a great product or service, but the building tells a different story. Faded exteriors and scuffed lobbies send a message before you ever get the chance to.
+Your space should reflect the standard you hold for your business. A fresh coat of paint is one of the most cost-effective ways to make that happen.
+As we head into the end of the year, it is a great time to refresh your facility.
+Reply here or call us at 209-696-3828.
+Talk soon,
+{{accountSignature}}
+________________
+
+
+
+
+EMAIL 10 - NOVEMBER 2025
+Subject: A great way to put remaining budget toward something visible
+Hi {{firstName}},
+As we close out another year, many businesses find themselves with budget dollars that are waiting to be used before the books close.
+A commercial painting project is one of the most visible ways to put that budget to work. It preserves your facility, improves the experience for everyone who walks through the door, and you will notice it immediately.
+We can scope a project quickly and work within your timeline to get it done before year end.
+We would love to talk through options. Reply here or call us at 209-696-3828.
+Talk soon,
+{{accountSignature}}
+________________
+
+
+
+
+EMAIL 11 - DECEMBER 2025
+Subject: Fresh start for your facility in the new year
+Hi {{firstName}},
+A new year has a way of making you see your space with fresh eyes. Maybe it is the walls in your lobby, the wear in your hallways, or the exterior that has been waiting for the right time.
+Winter is a great time to plan. Our schedule has more flexibility this time of year, and we can help you figure out the right approach for your building so you are ready when the timing is right.
+No pressure, just a conversation. Reply here or call us at 209-696-3828.
+Talk soon,
+{{accountSignature}}
+________________
+
+
+
+
+EMAIL 12 - JANUARY 2026
+Subject: What to expect from a commercial painting partner you can count on
+Hi {{firstName}},
+We have been painting commercial buildings across the San Joaquin Valley since 2004. In that time, we have completed over 15,000 projects and built long-term partnerships with property managers, facility directors, and business owners across the region.
+What keeps them coming back is simple. We do what we say we are going to do, we communicate throughout the project, and we stand behind our work with a 5-year warranty.
+If you are planning commercial painting projects this year, we would love the opportunity to show you what we can do.
+Reply here or call us at 209-696-3828.
+Talk soon,
+{{accountSignature}}
+________________
+
+
+
+
+EMAIL 13 - FEBRUARY 2026
+Subject: Spring painting season is almost here and we are already booking
+Hi {{firstName}},
+Spring in the San Joaquin Valley is our busiest season for commercial painting. Exterior projects pick back up, businesses are refreshing their spaces, and our crews are in high demand.
+If you have been thinking about a project for your facility, reaching out early gives you the most flexibility and allows us to plan it properly.
+We work with offices, retail centers, warehouses, medical facilities, and multi-unit properties across Stockton and the surrounding Central Valley communities.
+We would love to hear about your upcoming projects. Reply here or call us at 209-696-3828.
+Talk soon,
+
+{{accountSignature}}

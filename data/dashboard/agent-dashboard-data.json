@@ -1,0 +1,67 @@
+{
+  "currentFocus": [
+    "Spring Festival prep + outreach confirmations",
+    "Desk-return estimate / sign follow-ups",
+    "AI painter offer refresh"
+  ],
+  "topAgents": [
+    "Atlas Coordinator",
+    "Church Operations Agent",
+    "BDM Sales Agent",
+    "Business Growth Agent"
+  ],
+  "openLoops": [
+    "Outlook browser/OAuth workaround not complete",
+    "Cal Water backflow test scheduling still pending",
+    "Spring Festival signage/booth plan handoff due at 4:15 PM",
+    "Gallup Easter ads creative wrap-up",
+    "New Mexico tax email review still pending"
+  ],
+  "reminders": [
+    "Outreach confirmations tonight",
+    "Cal Water scheduling tomorrow morning",
+    "Spring Festival plan + church bills at 4:15 PM",
+    "Desk-return estimate + sign follow-ups",
+    "AI painter experiment tracker setup"
+  ],
+  "leadPipeline": [
+    "SmartBuild",
+    "AAA Facility Services",
+    "SERVPRO Stockton/Livermore",
+    "City Wide Property Services",
+    "State Fund"
+  ],
+  "sermonPipeline": [
+    {
+      "title": "Pastoral Exampleship",
+      "url": "https://docs.google.com/document/d/1aDgnjhB5Byr_M7dYximfLAWva6VdLPF1lvdmV65VWrA/edit"
+    },
+    {
+      "title": "Framework of Discipleship",
+      "url": "https://docs.google.com/document/d/1i3PvQdAC7ujlQ7hXK36QzRwMwkWIi21Ngyok7PjPRu4/edit"
+    },
+    {
+      "title": "Treasured Possession",
+      "url": "https://docs.google.com/document/d/18fOI3Y22qmyPjW30cKeobHOHi_00Fi86eo5P_DkxQk8/edit"
+    },
+    {
+      "title": "God Preserves The Faithful",
+      "url": "https://docs.google.com/document/d/1aCtDQi-GqnvRxAIx40nZHFY9FSb71MzKn6D2drO1UEE/edit"
+    }
+  ],
+  "agentStatus": [
+    {"name": "Atlas Coordinator", "status": "active"},
+    {"name": "Church Operations Agent", "status": "active"},
+    {"name": "BDM Sales Agent", "status": "active"},
+    {"name": "Business Growth Agent", "status": "active"},
+    {"name": "Legacy Agents (Reminder/Briefing/etc.)", "status": "archived 2026-03-23"},
+    {"name": "Outlook Workaround", "status": "in progress"}
+  ],
+  "systemStatus": [
+    "Google Docs/Calendar/Gmail: working (Docs write locked until OAuth approval finished)",
+    "Telegram file sending: working",
+    "Lead workflow: working",
+    "Sermon workflow: working via Church Ops Agent",
+    "Outlook browser workaround: in progress"
+  ]
+}
