@@ -1,0 +1,89 @@
+[
+  {
+    "id": "4da1a286-c8f4-4458-9c03-98c6ebb84a04",
+    "name": "One-hour calendar reminders",
+    "description": "Runs calendar-reminder-scan.mjs every 5 minutes to surface near-term Google Calendar events.",
+    "schedule": {
+      "kind": "cron",
+      "expr": "*/5 * * * *",
+      "tz": "America/Los_Angeles"
+    },
+    "nextRun": "2026-03-24T23:35:00.000Z",
+    "lastRun": "2026-03-24T23:30:00.015Z",
+    "status": "ok"
+  },
+  {
+    "id": "4b67ad0e-7b5f-43e6-87e6-983a96a1db81",
+    "name": "Morning Momentum auto-report",
+    "description": "Daily 7:30 AM Morning Momentum briefing generated from morning-surprise.mjs.",
+    "schedule": {
+      "kind": "cron",
+      "expr": "30 7 * * *",
+      "tz": "America/Los_Angeles"
+    },
+    "nextRun": "2026-03-25T14:30:00.000Z",
+    "lastRun": "2026-03-24T14:30:10.620Z",
+    "status": "ok"
+  },
+  {
+    "id": "b9188e18-459f-4067-8210-c33c4db9e57e",
+    "name": "Daily model health check",
+    "description": "Daily 9:00 AM model/token usage check via check-model-health.mjs.",
+    "schedule": {
+      "kind": "cron",
+      "expr": "0 9 * * *",
+      "tz": "America/Los_Angeles"
+    },
+    "nextRun": "2026-03-25T16:00:00.000Z",
+    "lastRun": "2026-03-24T16:00:12.637Z",
+    "status": "ok"
+  },
+  {
+    "id": "f026cfa9-76ae-4393-af13-ac587e00fa62",
+    "name": "Order lunch for Lee & Associates L&L",
+    "description": "One-time reminder to order lunch ahead of the Lee & Associates lunch-and-learn.",
+    "schedule": {
+      "kind": "at",
+      "at": "2026-03-25T16:00:00.000Z",
+      "tz": "America/Los_Angeles"
+    },
+    "nextRun": "2026-03-25T16:00:00.000Z",
+    "status": "pending"
+  },
+  {
+    "id": "8ca56f9e-b2c2-471c-a704-3f2768755026",
+    "name": "DMV appointment (day before)",
+    "description": "Reminder with prep instructions the afternoon before the DMV appointment.",
+    "schedule": {
+      "kind": "at",
+      "at": "2026-04-13T16:00:00.000Z",
+      "tz": "America/Los_Angeles"
+    },
+    "nextRun": "2026-04-13T16:00:00.000Z",
+    "status": "pending"
+  },
+  {
+    "id": "6921ef7e-7709-47e8-a169-0cdab76f2aad",
+    "name": "DMV appointment (day of)",
+    "description": "Morning-of reminder for the DMV driver license appointment.",
+    "schedule": {
+      "kind": "at",
+      "at": "2026-04-14T14:30:00.000Z",
+      "tz": "America/Los_Angeles"
+    },
+    "nextRun": "2026-04-14T14:30:00.000Z",
+    "status": "pending"
+  },
+  {
+    "id": "b8ec96ff-0dba-4938-9fff-19bdb85f348a",
+    "name": "Backflow testing status check",
+    "description": "Reminds Atlas to confirm Cal Water backflow paperwork before the June deadline.",
+    "schedule": {
+      "kind": "at",
+      "at": "2026-06-01T16:00:00.000Z",
+      "tz": "America/Los_Angeles"
+    },
+    "nextRun": "2026-06-01T16:00:00.000Z",
+    "status": "pending"
+  }
+]

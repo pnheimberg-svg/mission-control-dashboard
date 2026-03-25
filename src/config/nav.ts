@@ -1,4 +1,4 @@
-import { BookOpenCheck, KanbanSquare, LayoutDashboard, Sparkles } from "lucide-react";
+import { BookOpenCheck, CalendarDays, KanbanSquare, LayoutDashboard, Sparkles } from "lucide-react";
 
 export const NAV_ITEMS = [
   {
@@ -24,5 +24,11 @@ export const NAV_ITEMS = [
     description: "Atlas request queue & approvals",
     href: "/tools/kanban",
     icon: KanbanSquare
+  },
+  {
+    title: "Automation Calendar",
+    description: "Cron + reminder map",
+    href: "/tools/calendar",
+    icon: CalendarDays
   }
 ];
